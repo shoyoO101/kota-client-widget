@@ -128,6 +128,7 @@
   var sessionId = getSessionId();
 
   var css = [
+    ":host{all:initial;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;}",
     ".kota-widget-root{all:initial;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;--kota-bg:#0a0a0a;--kota-text:#f4f6fb;--kota-muted:rgba(244,246,251,.65);--kota-surface:#17191f;--kota-input-bg:rgba(255,255,255,.06);--kota-border:rgba(255,255,255,.08);--kota-close-bg:rgba(255,255,255,.08);--kota-close-hover:rgba(255,255,255,.16);--kota-placeholder:rgba(255,255,255,.35);--kota-error-bg:#3a1d1d;--kota-error-text:#ffd6d6;--kota-error-border:rgba(255,120,120,.25);}",
     ".kota-widget-root *,.kota-widget-root *::before,.kota-widget-root *::after{box-sizing:border-box;}",
     ".kota-widget-root[data-kota-theme=\"light\"]{--kota-bg:#fffcf6;--kota-text:#20180a;--kota-muted:rgba(60,48,20,.62);--kota-surface:#faf3e4;--kota-input-bg:#f8f1e2;--kota-border:rgba(184,134,11,.18);--kota-close-bg:rgba(184,134,11,.1);--kota-close-hover:rgba(184,134,11,.18);--kota-placeholder:rgba(60,48,20,.4);--kota-error-bg:#fdecec;--kota-error-text:#8a1f1f;--kota-error-border:rgba(180,40,40,.2);}",
@@ -378,6 +379,41 @@
         role +
         (extraClass ? " " + extraClass : "");
       var node = el("div", className, { text: text });
+
+      // Keep the critical bubble appearance explicit so the widget stays
+      // visually stable even on aggressive client websites.
+      node.style.boxSizing = "border-box";
+      node.style.maxWidth = "84%";
+      node.style.padding = "11px 14px";
+      node.style.borderRadius = "16px";
+      node.style.fontSize = "14px";
+      node.style.lineHeight = "1.5";
+      node.style.whiteSpace = "pre-wrap";
+      node.style.wordWrap = "break-word";
+      node.style.overflowWrap = "anywhere";
+      node.style.margin = "0";
+      node.style.display = "block";
+
+      if (role === "user") {
+        node.style.alignSelf = "flex-end";
+        node.style.background = "rgb(" + accentRgbStr + ")";
+        node.style.color = "#fff";
+        node.style.border = "0";
+        node.style.borderBottomRightRadius = "4px";
+      } else {
+        node.style.alignSelf = "flex-start";
+        node.style.background = extraClass
+          ? "var(--kota-error-bg)"
+          : "var(--kota-surface)";
+        node.style.color = extraClass
+          ? "var(--kota-error-text)"
+          : "var(--kota-text)";
+        node.style.border = extraClass
+          ? "1px solid var(--kota-error-border)"
+          : "1px solid var(--kota-border)";
+        node.style.borderBottomLeftRadius = "4px";
+      }
+
       messages.appendChild(node);
       scrollToBottom();
       return node;
@@ -393,9 +429,32 @@
 
     function showTyping() {
       var node = el("div", "kota-widget-typing", { "aria-label": "Assistant is typing" });
-      node.appendChild(document.createElement("span"));
-      node.appendChild(document.createElement("span"));
-      node.appendChild(document.createElement("span"));
+      node.style.boxSizing = "border-box";
+      node.style.alignSelf = "flex-start";
+      node.style.display = "flex";
+      node.style.gap = "5px";
+      node.style.width = "fit-content";
+      node.style.padding = "12px 14px";
+      node.style.background = "var(--kota-surface)";
+      node.style.border = "1px solid var(--kota-border)";
+      node.style.borderRadius = "16px";
+      node.style.borderBottomLeftRadius = "4px";
+      node.style.margin = "0";
+
+      for (var i = 0; i < 3; i++) {
+        var dot = document.createElement("span");
+        dot.style.display = "block";
+        dot.style.width = "7px";
+        dot.style.height = "7px";
+        dot.style.flex = "0 0 7px";
+        dot.style.borderRadius = "50%";
+        dot.style.background = "var(--kota-muted)";
+        dot.style.animation = "kota-widget-bounce 1.1s infinite ease-in-out";
+        if (i === 1) dot.style.animationDelay = ".15s";
+        if (i === 2) dot.style.animationDelay = ".3s";
+        node.appendChild(dot);
+      }
+
       messages.appendChild(node);
       scrollToBottom();
       return node;
