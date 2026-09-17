@@ -276,7 +276,7 @@
       var welcome = el("div", "kota-widget-welcome");
       welcome.appendChild(el("div", "kota-widget-welcome-title", { text: "Hi! How can we help?" }));
       welcome.appendChild(el("div", "kota-widget-welcome-text", {
-        text: "Ask us about products, ingredients, shipping, or returns."
+        text: "Choose a question below or type your own."
       }));
       empty.appendChild(welcome);
       empty.appendChild(el("div", "kota-widget-empty-text", { text: "Popular questions" }));
