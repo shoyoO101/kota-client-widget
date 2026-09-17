@@ -458,9 +458,6 @@
     bubble.addEventListener("click", function () {
       setOpen(!isOpen);
     });
-    closeBtn.addEventListener("click", function () {
-      setOpen(false);
-    });
     composer.addEventListener("submit", function (event) {
       event.preventDefault();
       sendMessage(input.value);
