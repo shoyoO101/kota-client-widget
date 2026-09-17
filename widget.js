@@ -175,12 +175,12 @@
     "@media (max-width:480px){.kota-widget-panel{right:10px;left:10px;bottom:82px;width:auto;height:min(72vh,calc(100vh - 100px));border-radius:20px;}.kota-widget-bubble{right:16px;bottom:16px;width:56px;height:56px;}.kota-widget-header{padding:16px 16px 10px;}.kota-widget-messages{padding-left:14px;padding-right:14px;}.kota-widget-composer{padding-left:12px;padding-right:12px;}}"
   ].join("");
 
-  function injectStyles() {
-    if (document.getElementById("kota-widget-styles")) return;
+  function injectStyles(shadowRoot) {
+    if (shadowRoot.getElementById && shadowRoot.getElementById("kota-widget-styles")) return;
     var style = document.createElement("style");
     style.id = "kota-widget-styles";
     style.textContent = css;
-    document.head.appendChild(style);
+    shadowRoot.appendChild(style);
   }
 
   function el(tag, className, attrs) {
@@ -231,7 +231,10 @@
   }
 
   function mount() {
-    injectStyles();
+    var host = document.createElement("div");
+    host.setAttribute("data-kota-widget-host", "");
+    var shadowRoot = host.attachShadow({ mode: "open" });
+    injectStyles(shadowRoot);
 
     var root = el("div", "kota-widget-root");
     root.setAttribute("data-kota-theme", theme);
@@ -322,7 +325,8 @@
     panel.appendChild(composer);
     root.appendChild(panel);
     root.appendChild(bubble);
-    document.body.appendChild(root);
+    shadowRoot.appendChild(root);
+    document.body.appendChild(host);
 
     var isOpen = false;
     var isSending = false;
@@ -383,7 +387,7 @@
       isSending = busy;
       input.disabled = busy;
       sendBtn.disabled = busy;
-      var pills = document.querySelectorAll(".kota-widget-pill");
+      var pills = root.querySelectorAll(".kota-widget-pill");
       for (var i = 0; i < pills.length; i++) pills[i].disabled = busy;
     }
 
